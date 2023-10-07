@@ -2,15 +2,15 @@ import markdown
 import flask
 import hashlib
 import psycopg2
+import os
+import openai
 import datetime
     
 
-key = "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"
-import os
-import openai
+key = os.environ.get("apikey")
 
 def adduser(uname, pasa):
-    url = "postgres://Ishanyjha:ZNE8fMIz9pxj@ep-damp-limit-31626814.us-west-2.aws.neon.tech/user_info"
+    url = os.environ.get("url")
     con = psycopg2.connect(url)
     curs = con.cursor()
 
@@ -19,7 +19,7 @@ def adduser(uname, pasa):
     con.commit()
     con.close()
 
-url = "postgres://Ishanyjha:ZNE8fMIz9pxj@ep-damp-limit-31626814.us-west-2.aws.neon.tech/user_info"
+url = os.environ.get("url")
 def check(uname):
     con = psycopg2.connect(url)
     curs = con.cursor()
@@ -41,7 +41,7 @@ def grab(psw):
     else:
         return recs
 def chatGPT(IdealCareer, Country, Age, interestsskills):
-    openai.organization = "org-zEVby4wZJTLdgnqziKKA6Uwi"
+    openai.organization = os.environ.get("openaiorganization")
     openai.api_key = key
 
 
@@ -58,7 +58,7 @@ def chatGPT(IdealCareer, Country, Age, interestsskills):
     return response
 
 app = flask.Flask(__name__)
-app.config["SECRET KEY"]="ishan"
+app.config["SECRET KEY"]=os.environ.get("secretkey")
 @app.route("/")
 def index():
     return flask.render_template("index.html")
