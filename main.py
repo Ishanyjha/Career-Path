@@ -5,6 +5,17 @@ import psycopg2
 import os
 import openai
 import datetime
+
+def signin(uname, pasa):
+    url = "postgres://mathobotix.irvine.lab:VBQRvxA2dP9i@ep-shrill-hill-95052366.us-west-2.aws.neon.tech/neondb"
+    con = psycopg2.connect(url)
+    curs = con.cursor()
+    curs.execute("SELECT * FROM users WHERE username = %s AND password = %s", (uname,pasa))
+    recs = list(curs.fetchall())
+    if len(recs) == 0:
+        return False
+    else:
+        return True
     
 
 key = os.environ.get("apikey")
@@ -87,20 +98,17 @@ def registration():
         else:
             bas = hashlib.sha256(P.encode('utf-8'))
             adduser(NU, bas.hexdigest())
-        print(P)
-        harhar = flask.make_response(flask.redirect("/user"))
-        harhar.set_cookie("password", bas.hexdigest())
-        return harhar
+        return "You are log in!"
      else:
         return "Forbidden Input."
      
-     @app.route("/login", methods=["POST", "GET"])   
+@app.route("/login", methods=["POST", "GET"])       
 def login():
     if(flask.request.method=="POST"):
         P = flask.request.form.get("Password")
         U = flask.request.form.get("Username")
         print(P)
-        if signin(U, hashlib.sha256(P.encode('utf-8')).hexdigest()) == True:
+        if(signin(U, hashlib.sha256(P.encode('utf-8')).hexdigest()) == True):
             flask.session["username"]=U
             return flask.redirect("/user")
         else:
