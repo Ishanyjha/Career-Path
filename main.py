@@ -15,7 +15,7 @@ def adduser(uname, pasa):
     curs = con.cursor()
 
     log = datetime.datetime.now().date()
-    curs.execute("INSERT INTO user_info (username, password, lastlog) VALUES (%s,%s,%s)",(uname, pasa, log))
+    curs.execute("INSERT INTO user_info (username, password, lastlog, tokens) VALUES (%s,%s,%s,%i)",(uname, pasa, log, 3))
     con.commit()
     con.close()
 
@@ -33,6 +33,7 @@ def check(uname):
 def grab(psw):
     con = psycopg2.connect(url)
     curs = con.cursor()
+
 
     curs.execute("SELECT * FROM user_info WHERE password = %s", (psw,))
     recs = list(curs.fetchall())
@@ -55,7 +56,8 @@ def chatGPT(IdealCareer, Country, Age, interestsskills):
         ]
     )
 
-    return response
+    return response 
+
 
 app = flask.Flask(__name__)
 app.config["SECRET KEY"]=os.environ.get("secretkey")
@@ -91,6 +93,22 @@ def registration():
         return harhar
      else:
         return "Forbidden Input."
+     
+     @app.route("/login", methods=["POST", "GET"])   
+def login():
+    if(flask.request.method=="POST"):
+        P = flask.request.form.get("Password")
+        U = flask.request.form.get("Username")
+        print(P)
+        if signin(U, hashlib.sha256(P.encode('utf-8')).hexdigest()) == True:
+            flask.session["username"]=U
+            return flask.redirect("/user")
+        else:
+            return "Invalid login har har"
+        return flask.jsonify(status=200)
+    return "Forbidden Input."
+     
+
 
 
 @app.route("/user")
