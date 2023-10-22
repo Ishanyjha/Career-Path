@@ -6,15 +6,19 @@ import os
 import openai
 import datetime
 
+
 def signin(uname, pasa):
-    url = "postgres://mathobotix.irvine.lab:VBQRvxA2dP9i@ep-shrill-hill-95052366.us-west-2.aws.neon.tech/neondb"
+    url = os.environ.get("url")
     con = psycopg2.connect(url)
     curs = con.cursor()
-    curs.execute("SELECT * FROM users WHERE username = %s AND password = %s", (uname,pasa))
+
+    curs.execute("SELECT * FROM user_info WHERE username = %s AND password = %s", (uname,pasa))
     recs = list(curs.fetchall())
+    
     if len(recs) == 0:
         return False
     else:
+        flask.session["tokens"] = int(recs[0][2])
         return True
     
 
@@ -26,7 +30,7 @@ def adduser(uname, pasa):
     curs = con.cursor()
 
     log = datetime.datetime.now().date()
-    curs.execute("INSERT INTO user_info (username, password, lastlog, tokens) VALUES (%s,%s,%s,%i)",(uname, pasa, log, 3))
+    curs.execute("INSERT INTO user_info (username, password, lastlog, tokens) VALUES (%s,%s,%s,%s)",(uname, pasa, log, 3))
     con.commit()
     con.close()
 
@@ -37,6 +41,7 @@ def check(uname):
 
     curs.execute("SELECT * FROM user_info WHERE password = %s", (uname,))
     recs = list(curs.fetchall())
+    print(recs)
     if len(recs) == 0:
         return False
     else:
@@ -53,6 +58,8 @@ def grab(psw):
     else:
         return recs
 def chatGPT(IdealCareer, Country, Age, interestsskills):
+    if (flask.session.get("tokens")<=0):
+        return "Not Enough Tokens!"
     openai.organization = os.environ.get("openaiorganization")
     openai.api_key = key
 
@@ -66,14 +73,22 @@ def chatGPT(IdealCareer, Country, Age, interestsskills):
             {"role": "user", "content": "I am in the "+Age+"th grade, I live in "+Country+", My skills are"+interestsskills +"and my ideal job is a"+IdealCareer}
         ]
     )
+    flask.session["tokens"]=flask.session.get("tokens")-1
+    con = psycopg2.connect(url)
+    curs = con.cursor()
+
+    curs.execute("UPDATE user_info SET tokens = %s WHERE username=%s",(flask.session["tokens"], flask.session["username"]))
+    con.commit()
+    con.close()
 
     return response 
 
 
 app = flask.Flask(__name__)
-app.config["SECRET KEY"]=os.environ.get("secretkey")
+app.config["SECRET_KEY"]=os.environ.get("secretkey")
 @app.route("/")
 def index():
+    print(os.environ["url"])
     return flask.render_template("index.html")
 
 @app.route("/message", methods=["POST"])
@@ -98,31 +113,34 @@ def registration():
         else:
             bas = hashlib.sha256(P.encode('utf-8'))
             adduser(NU, bas.hexdigest())
-        return "You are log in!"
+        return flask.redirect("/user")
      else:
         return "Forbidden Input."
      
 @app.route("/login", methods=["POST", "GET"])       
 def login():
     if(flask.request.method=="POST"):
+        print("hello world")
         P = flask.request.form.get("Password")
         U = flask.request.form.get("Username")
         print(P)
         if(signin(U, hashlib.sha256(P.encode('utf-8')).hexdigest()) == True):
             flask.session["username"]=U
+            flask.session["isloggedin"] = True
             return flask.redirect("/user")
         else:
+            flask.session["isloggedin"] = False
             return "Invalid login har har"
         return flask.jsonify(status=200)
     return "Forbidden Input."
      
 
 
-
-@app.route("/user")
+ 
+@app.route("/user") 
 def user():
-    harharhar = flask.request.cookies.get("password")
-    print(harharhar)
-    if check(harharhar):
-        return flask.render_template("user.html", username = grab(harharhar)[0][0])
-    return "nan"
+   
+    if (flask.session.get("isloggedin")):
+        return flask.render_template("user.html", username = flask.session.get("username"),tokens =  flask.session.get("tokens"))
+    #return flask.redirect("/user")
+    return "something wrong"

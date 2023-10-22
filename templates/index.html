@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-</head> 
-<body>
-
+    <style>
+        .bg{
+            background-image:url(../static/HARHAHR.png);
+            background-size:cover;
+        }
+    </style>
+</head>
+<body class="bg" style="margin:20px;">
     </form>
         <form class="column" action="/registration" method="post"><br>
             <h3 title="Title">Registration</h3>
@@ -14,7 +19,8 @@
             <label for="RePassword">Retype Password:</label><br>
             <input class="input" type="text" id="RePassword" name="RePassword" value="" style="width: 562px"></input><br>
             <input class="button" type="submit" value="Submit"><br>
-
+                </form>
+                <form class="column" action="/login" method="post"><br>
             <h3 title="OtherTitle">Log In</h3>
             <label for="Username">Username:</label><br>
             <input class="input" type="text" id="Username" name="Username" value="" style="width: 562px"></input><br>
@@ -26,5 +32,4 @@
     </form>
 </head>
        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-
-
+        
