@@ -115,6 +115,7 @@ def registration():
         else:
             bas = hashlib.sha256(P.encode('utf-8'))
             adduser(NU, bas.hexdigest())
+            flask.session.clear()
         return flask.redirect("/user")
      else:
         return "Forbidden Input."
