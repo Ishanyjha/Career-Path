@@ -146,5 +146,5 @@ def user():
    
     if (flask.session.get("isloggedin")):
         return flask.render_template("user.html", username = flask.session.get("username"),tokens =  flask.session.get("tokens"))
-    #return flask.redirect("/user")
-    return "something wrong"
+    return flask.redirect("/index.html")
+    #return "something wrong"
