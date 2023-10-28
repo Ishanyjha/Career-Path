@@ -18,7 +18,7 @@ def signin(uname, pasa):
     if len(recs) == 0:
         return False
     else:
-        flask.session["tokens"] = int(recs[0][2])
+        flask.session["tokens"] = int(recs[0][3])
         return True
     
 
