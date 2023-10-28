@@ -99,9 +99,10 @@ def thing():
         Age = flask.request.form.get("Age")
         interestsskills = flask.request.form.get("interestsskills")
         har = chatGPT(IdealCareer, Country, Age, interestsskills)
+        print(har)
         if(har == "Not Enough Tokens!"):
             return har
-        rah = markdown.markdown(har[0]["choices"][0]["message"]["content"])
+        rah = markdown.markdown(har["choices"][0]["message"]["content"])
         return flask.render_template("response.html", har=rah)
     
 @app.route("/registration", methods=["POST", "GET"])
