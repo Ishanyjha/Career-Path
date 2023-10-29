@@ -78,7 +78,6 @@ def chatGPT(IdealCareer, Country, Age, interestsskills):
     curs = con.cursor()
 
     curs.execute("UPDATE user_info SET tokens = %s WHERE username=%s",(flask.session["tokens"], flask.session["username"]))
-    curs.execute("INSERT INTO promptlog VALUES %s,%s,%s,%s,%s,%s,%s,%s,",(datetime.now(),Age,IdealCareer,Country,interestsskills))
     con.commit()
     con.close()
     return response 
