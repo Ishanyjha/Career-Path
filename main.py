@@ -63,9 +63,9 @@ def chatGPT(IdealCareer, Country, Age, interestsskills):
     openai.organization = os.environ.get("openaiorganization")
     openai.api_key = key
 
-
+    
     response = openai.ChatCompletion.create(
-        model="gpt-4-0613",
+        model="gpt-3.5-turbo-0613",
         messages=[
             {"role": "system", "content": "You are a career advisor trying to give career path advice. Someone will give you their age/grade, their country of residence (use this to get localized job information), their ideal career, and their skills. Use this to provide a comprehensive answer with courses, internships, books, resources that they can use"},
             {"role": "user", "content": "I am an 8th grader interested in math, my country is France, I want to be a software engineer, my skils are math and coding."},
@@ -78,9 +78,9 @@ def chatGPT(IdealCareer, Country, Age, interestsskills):
     curs = con.cursor()
 
     curs.execute("UPDATE user_info SET tokens = %s WHERE username=%s",(flask.session["tokens"], flask.session["username"]))
+    curs.execute("INSERT INTO promptlog VALUES %s,%s,%s,%s,%s,%s,%s,%s,",(datetime.now(),Age,IdealCareer,Country,interestsskills))
     con.commit()
     con.close()
-
     return response 
 
 
