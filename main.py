@@ -5,7 +5,7 @@ import psycopg2
 import os
 import openai
 import datetime
-
+these are the plugins
 
 def signin(uname, pasa):
     url = os.environ.get("url")
